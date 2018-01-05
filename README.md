@@ -155,6 +155,110 @@ _Create a file in root directory called .jshintrc_
   "esversion": 6
 }
 
+_Bower is a node module and package manager for the front end. On init, creates a bower.json file._
+16.
+npm install bower -g
+bower init (when starting new project)
+
+_install jquery._
+17.
+bower install jquery --save
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+
+_install bootstrap_
+18.
+bower install bootstrap --save
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="dist/js/app.js"></script>
+
+_install Moment.js - good for working with dates and times in apps._
+19.
+bower install moment --save
+<script src="bower_components/moment/min/moment.min.js"></script>
+
+_Gulp to join front end dependencies with another package. Edit Head html. concates one minified file for relevant vendor files._
+20.
+npm install bower-files --save-dev
+
+const lib = require('bower-files')();
+
+gulp.task('bowerJS', function () {
+  return gulp.src(lib.ext('js').files)
+    .pipe(concat('vendor.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('./dist/js'));
+});
+
+<script src="dist/js/vendor.min.js"></script>
+<script type="text/javascript" src="dist/js/app.js"></script>
+
+gulp.task('bowerCSS', function () {
+  return gulp.src(lib.ext('css').files)
+    .pipe(concat('vendor.css'))
+    .pipe(gulp.dest('./dist/css'));
+});
+
+_(replace earlier require statement with this to include bootstrap. Where to find the files we want.)_
+const lib = require('bower-files')({
+  "overrides":{
+    "bootstrap" : {
+      "main": [
+        "less/bootstrap.less",
+        "dist/css/bootstrap.css",
+        "dist/js/bootstrap.js"
+      ]
+    }
+  }
+});
+
+_(combine two bower tasks into one so they run in parallel. )_
+gulp.task('bower', ['bowerJS', 'bowerCSS']);
+
+_(replace earlier task. run start bower each time we make a build no matter whether it's prod or dist.)_
+gulp.task('build', ['clean'], function(){
+  if (distProduction) {
+    gulp.start('minifyScripts');
+  } else {
+    gulp.start('jsBrowserify');
+  }
+  gulp.start('bower');
+});
+
+_BrowserSync package to reload browser using local dev server. gulp.watch() -pass in 2 arguments. The first is an array of file names gulp watches. The second is an array of tasks to run whenever any of the aforementioned files change._
+21.
+npm install browser-sync --save-dev
+
+const browserSync = require('browser-sync').create();
+
+
+_gulp.task('serve', function() {
+  browserSync.init({
+    server: {
+      baseDir: "./",
+      index: "index.html"
+    }
+  });
+
+  gulp.watch(['js/*.js'], ['jsDist']);
+  gulp.watch(['bower.json'], ['bowerDist']);
+});_
+
+_Above is watching bower.json file and when changes are made, browser will be reloaded when serve task runs_
+22.
+gulp.task('jsDist', ['jsBrowserify', 'jshint'], function(){
+  browserSync.reload();
+});
+
+23.
+gulp.task('bowerDist, ['bower'], function(){
+  browserSync.reload();
+});
+
+
+
 ## Known Bugs
 
 _Text._
