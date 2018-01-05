@@ -257,10 +257,106 @@ gulp.task('bowerDist, ['bower'], function(){
   browserSync.reload();
 });
 
+_Install Jasmine, JS testing framework. init it. (npm test)_
 24.
+npm install jasmine --save-dev
+./node_modules/.bin/jasmine init
 
+_(update package.json file)_
+"scripts": {
+  "test": "jasmine"
+}
 
+_To update any source file and your browserify bundle will be recompiled on the spot._
+25.
+npm install watchify --save-dev
 
+_Install Karma - test runner (karma init)_
+26.
+npm install karma --save-dev
+npm install karma-jasmine jasmine-core --save-dev
+npm install karma-chrome-launcher --save-dev
+(npm install karma-cli --save-dev)
+npm install karma-browserify --save-dev
+npm install karma-jquery --save-dev
+npm install karma-jasmine-html-reporter --save-dev
+
+_update karma.conf.js file_
+27.
+module.exports = function(config) {
+  config.set({
+    basePath: '',
+    frameworks: ['jquery-3.2.1', 'jasmine', 'browserify'],
+    files: [
+      'js/*.js',
+      'spec/*-spec.js'
+    ],
+    exclude: [
+    ],
+    preprocessors: {
+      'js/*.js': [ 'browserify'],
+      'spec/*.js': ['browserify']
+    },
+    plugins: [
+      'karma-jquery',
+      'karma-browserify',
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-jasmine-html-reporter'
+    ],
+
+    reporters: ['progress', 'kjhtml'],
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+    browsers: ['Chrome'],
+    singleRun: false,
+    concurrency: Infinity
+  })
+}
+
+_update package.json file_
+28.
+"scripts": {
+    "test": "karma start karma.conf.js"
+  },
+
+_Concatenates CSS_
+29.
+_gulp.task('cssDist', function() {
+  gulp.src(['css/*.css'])
+  .pipe(concat('vendor.css'))
+  .pipe(gulp.dest('./dist/css'))
+});_
+
+<link href="build/css/vendor.css" rel="stylesheet" type="text/css">
+
+_Install Babel - transpiler. version to version compiling code or one langugae to another_
+30.
+npm install babelify babel-core babel-preset-es2015 --save-dev
+const babelify = require('babelify');
+
+_(update gulpfile)_
+gulp.task('jsBrowserify', ['concatInterface'], function() {
+  return browserify({ entries: ['./tmp/allConcat.js']})
+    .transform(babelify.configure({
+      presets: ["es2015"]
+    }))
+    .bundle()
+    .pipe(source('app.js'))
+    .pipe(gulp.dest('./build/js'))
+});
+
+_update karma.conf.js file. PLEASE NOTE: you may have to install babel-core and change below from es2015 to env_
+31.
+browserify: {
+      debug: true,
+      transform: [ [ 'babelify', {presets: ["es2015"]} ] ]
+    },
+
+32. 
+install SASS     
 
 ## Known Bugs
 

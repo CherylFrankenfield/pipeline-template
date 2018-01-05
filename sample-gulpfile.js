@@ -106,15 +106,15 @@ gulp.task('bowerDist', ['bower'], function(){
   browserSync.reload();
 });
 
-// gulp.task('htmlBuild', ['bower'], function(){
+// gulp.task('htmlDist', ['bower'], function(){
 //   browserSync.reload();
 // });
-//
-// gulp.task('cssBuild', ['bower'], function(){
+
+// gulp.task('cssDist', ['bower'], function(){
 //   return gulp.src('scss/*.scss')
 //   .pipe(sourcemaps.init())
 //   .pipe(sass())
 //   .pipe(sourcemaps.write())
-//   .pipe(gulp.dest('./build/css'))
+//   .pipe(gulp.dest('./dist/css'))
 //   .pipe(browserSync.stream());
 // });
